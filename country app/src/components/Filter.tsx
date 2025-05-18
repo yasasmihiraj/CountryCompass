@@ -1,0 +1,25 @@
+import React from "react";
+
+type Props = {
+  onFilter: (region: string) => void;
+};
+
+const Filter: React.FC<Props> = ({ onFilter }) => {
+  const regions = ["Africa", "Americas", "Asia", "Europe", "Oceania"];
+
+  return (
+    <select
+      className="w-full px-4 py-2 bg-white dark:bg-gray-800 rounded-lg border border-gray-300 dark:border-gray-600 text-gray-800 dark:text-white shadow-md transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-opacity-50 hover:bg-gray-100 dark:hover:bg-gray-700"
+      onChange={(e) => onFilter(e.target.value)}
+    >
+      <option value="">All Regions</option>
+      {regions.map((region) => (
+        <option key={region} value={region}>
+          {region}
+        </option>
+      ))}
+    </select>
+  );
+};
+
+export default Filter;
