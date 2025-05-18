@@ -35,7 +35,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   const logout = async () => {
-    await fetch("http://localhost:5000/api/auth/logout", { method: "POST" });
+    await fetch("https://countrycompass-backend.onrender.com/api/auth/logout", { method: "POST" });
     localStorage.removeItem("token");
     localStorage.removeItem("userEmail");
     setUser(null);

@@ -14,7 +14,7 @@ const Header = () => {
     setLoading(true);
     setError(null); // Reset error before submitting
     try {
-      const res = await fetch(`http://localhost:5000/api/auth/${type}`, {
+      const res = await fetch(`https://countrycompass-backend.onrender.com/api/auth/${type}`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(form),
