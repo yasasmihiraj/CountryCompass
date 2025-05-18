@@ -1,5 +1,5 @@
 
-### 📖 **README.md – Country Details App**
+### 📖 **README.md – Country Details App-Country Compass**
 ```md
 # 🌍 Country Details App
 
@@ -29,7 +29,7 @@ This application is designed for those who want to explore **geographical, polit
 | **Backend**  | Node.js, Express.js, MongoDB      |
 | **Authentication** | JSON Web Tokens (JWT)         |
 | **API**      | RESTful API for country data      |
-| **Hosting**  | Netlify (Frontend), Render (Backend) |
+| **Hosting**  |Render (Frontend), Render (Backend) |
 
 ---
 
@@ -50,7 +50,7 @@ Your backend provides RESTful API endpoints for managing authentication and coun
 
 ### **1️⃣ Clone the Repository**
 ```sh
-git clone https://github.com/YOUR_GITHUB_USERNAME/country-details-app.git
+git clone (https://github.com/yasasmihiraj/CountryCompass.git)
 cd country-details-app
 ```
 
@@ -83,11 +83,11 @@ npm run dev
 
 ## 🌍 Deployment Guide
 
-### ✅ **Frontend Deployment on Netlify**
+### ✅ **Frontend Deployment on Render**
 Netlify is an easy-to-use service for hosting static frontend applications.
 
 1. **Push your frontend code to GitHub**.
-2. **Create an account** at [Netlify](https://www.netlify.com/) and connect your GitHub repository.
+2. **Create an account** at [Render](https://countrycompass-frontend.onrender.com/)) and connect your GitHub repository.
 3. **Set deployment settings**:
    - **Build command**: `npm run build`
    - **Publish directory**: `build/`
@@ -95,7 +95,7 @@ Netlify is an easy-to-use service for hosting static frontend applications.
 
 Your frontend will be accessible at:
 ```sh
-https://yourapp.netlify.app
+(https://countrycompass-frontend.onrender.com/)
 ```
 
 ---
@@ -113,7 +113,7 @@ Render is a simple way to host Node.js applications with a free plan.
    ```
 5. **Render will generate a live backend URL**, such as:
    ```sh
-   https://yourapp.onrender.com
+   (https://countrycompass-backend.onrender.com)
    ```
 
 ---
@@ -123,7 +123,7 @@ Render is a simple way to host Node.js applications with a free plan.
 Once deployed, update **API URLs** in your frontend:
 
 ```js
-const API_BASE_URL = "https://yourapp.onrender.com";
+const API_BASE_URL = "(https://countrycompass-backend.onrender.com)";
 ```
 
 Modify the backend to allow cross-origin requests:
