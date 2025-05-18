@@ -1,56 +1,71 @@
-import { createContext, useContext, useEffect, useState } from "react";
+// src/context/AuthContext.tsx
+import { createContext, useContext, useState, useEffect, ReactNode } from "react";
 
-interface AuthContextType {
+type AuthContextType = {
   user: string | null;
   token: string | null;
+  authLoading: boolean;
   login: (email: string, token: string) => void;
   logout: () => void;
-  authLoading: boolean;
-}
+  favorites: string[];
+  setFavorites: React.Dispatch<React.SetStateAction<string[]>>;
+};
 
-const AuthContext = createContext<AuthContextType | undefined>(undefined);
+const AuthContext = createContext<AuthContextType>({} as AuthContextType);
 
-export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
-  const [user, setUser] = useState<string | null>(null);
-  const [token, setToken] = useState<string | null>(null);
+export const AuthProvider = ({ children }: { children: ReactNode }) => {
+  const [user, setUser] = useState<string | null>(localStorage.getItem("user"));
+  const [token, setToken] = useState<string | null>(localStorage.getItem("token"));
   const [authLoading, setAuthLoading] = useState(true);
+  const [favorites, setFavorites] = useState<string[]>([]); // ✅ Global favorites
 
   useEffect(() => {
-    const storedEmail = localStorage.getItem("userEmail");
-    const storedToken = localStorage.getItem("token");
-
-    if (storedEmail && storedToken) {
-      setUser(storedEmail);
-      setToken(storedToken);
-    }
-
     setAuthLoading(false);
   }, []);
 
+  useEffect(() => {
+    if (user && token) {
+      fetchFavorites();
+    } else {
+      setFavorites([]);
+    }
+  }, [user, token]);
+
+  const fetchFavorites = async () => {
+    try {
+      const res = await fetch("https://countrycompass-backend.onrender.com/api/favorites", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const data = await res.json();
+      setFavorites(data.favorites || []);
+    } catch (err) {
+      console.error("Failed to fetch favorites", err);
+      setFavorites([]);
+    }
+  };
+
   const login = (email: string, token: string) => {
+    localStorage.setItem("user", email);
     localStorage.setItem("token", token);
-    localStorage.setItem("userEmail", email);
     setUser(email);
     setToken(token);
   };
 
-  const logout = async () => {
-    await fetch("https://countrycompass-backend.onrender.com/api/auth/logout", { method: "POST" });
+  const logout = () => {
+    localStorage.removeItem("user");
     localStorage.removeItem("token");
-    localStorage.removeItem("userEmail");
     setUser(null);
     setToken(null);
+    setFavorites([]); // clear on logout
   };
 
   return (
-    <AuthContext.Provider value={{ user, token, login, logout, authLoading }}>
+    <AuthContext.Provider
+      value={{ user, token, authLoading, login, logout, favorites, setFavorites }}
+    >
       {children}
     </AuthContext.Provider>
   );
 };
 
-export const useAuth = () => {
-  const ctx = useContext(AuthContext);
-  if (!ctx) throw new Error("AuthContext must be used inside AuthProvider");
-  return ctx;
-};
+export const useAuth = () => useContext(AuthContext);

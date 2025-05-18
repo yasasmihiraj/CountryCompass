@@ -1,16 +1,30 @@
 export interface Country {
-    name: {
-      common: string;
-      official: string;
+  cca3: string;
+  name: {
+    common: string;
+    official: string;
+  };
+  capital?: string[];
+  region: string;
+  population: number;
+  flags: {
+    png: string;
+    svg: string;
+  };
+  languages?: {
+    [key: string]: string;
+  };
+
+  // ✅ Add these extra optional fields for CountryDetail page
+  borders?: string[];
+  currencies?: {
+    [currencyCode: string]: {
+      name: string;
+      symbol: string;
     };
-    cca3: string;
-    flags: {
-      png: string;
-      svg: string;
-    };
-    region: string;
-    capital: string[];
-    population: number;
-    languages: { [key: string]: string };
-  }
-  
+  };
+  maps?: {
+    googleMaps: string;
+    openStreetMaps: string;
+  };
+}

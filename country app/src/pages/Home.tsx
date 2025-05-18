@@ -8,32 +8,63 @@ import {
 import CountryCard from "../components/CountryCard";
 import SearchBar from "../components/SearchBar";
 import Filter from "../components/Filter";
+import { useAuth } from "../context/AuthContext";
 
 const Home = () => {
+  const { user } = useAuth();
   const [countries, setCountries] = useState<Country[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [userFavorites, setUserFavorites] = useState<string[]>([]);
 
+  // ✅ Load countries AND favorites when user changes
   useEffect(() => {
-    loadAllCountries();
-  }, []);
+    const initialize = async () => {
+      setLoading(true);
+      try {
+        await loadAllCountries();
+        if (user) await fetchUserFavorites();
+      } catch (err) {
+        setError("Something went wrong. Please try again.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    initialize();
+  }, [user]);
 
   const loadAllCountries = async () => {
-    setLoading(true);
-    setError(null);
     try {
       const data = await fetchAllCountries();
       setCountries(data);
     } catch {
       setError("Failed to load countries. Please try again.");
       setCountries([]);
-    } finally {
-      setLoading(false);
+    }
+  };
+
+  const fetchUserFavorites = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      const res = await fetch("https://countrycompass-backend.onrender.com/api/favorites", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (!res.ok) throw new Error("Failed to fetch favorites");
+
+      const data = await res.json();
+      setUserFavorites(data.favorites || []);
+    } catch (err) {
+      console.error("Failed to fetch user favorites:", err);
     }
   };
 
   const handleSearch = async (name: string) => {
-    if (!name) return loadAllCountries();
+    if (!name) return await refreshAll();
+
     setLoading(true);
     setError(null);
     try {
@@ -48,7 +79,8 @@ const Home = () => {
   };
 
   const handleFilter = async (region: string) => {
-    if (!region) return loadAllCountries();
+    if (!region) return await refreshAll();
+
     setLoading(true);
     setError(null);
     try {
@@ -62,20 +94,39 @@ const Home = () => {
     }
   };
 
+  // ✅ Refresh countries and favorites after filters/search clear
+  const refreshAll = async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      await loadAllCountries();
+      if (user) await fetchUserFavorites();
+    } catch {
+      setError("Failed to refresh data.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <main
       className="min-h-screen 
-bg-gradient-to-r from-sky-400 via-teal-300 to-lime-300 
-dark:bg-gradient-to-r dark:from-sky-900 dark:via-teal-900 dark:to-lime-900 
-text-gray-900 dark:text-white transition-colors duration-300"
+    bg-gradient-to-r from-sky-400 via-teal-300 to-lime-300 
+    dark:bg-gradient-to-r dark:from-sky-900 dark:via-teal-900 dark:to-lime-900 
+    text-gray-900 dark:text-white transition-colors duration-300"
     >
       <div className="max-w-7xl mx-auto px-4 py-8">
-        <header className="text-center mb-8">
-          <h1 className="text-3xl md:text-4xl font-bold tracking-tight mb-2">
-            🌍 Explore Countries Around the World!
+      <header className="text-center mb-12">
+          <h1 className="text-5xl md:text-6xl font-black tracking-tight mb-4 drop-shadow-lg flex items-center justify-center gap-2">
+            <span role="img" aria-label="Earth">🌍</span>
+            <span>
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-700 via-pink-600 to-yellow-500 dark:from-indigo-200 dark:via-pink-300 dark:to-yellow-200 animate-gradient-x">
+                Explore Countries
+              </span>
+            </span>
           </h1>
-          <p className="text-black-500 dark:text-gray-300 text-sm">
-            Search by name or filter by region to discover country details.
+          <p className="text-lg md:text-xl text-gray-700 dark:text-gray-200 font-medium">
+                  Discover, search, and favorite countries worldwide! 🌐✨
           </p>
         </header>
 
@@ -100,7 +151,20 @@ text-gray-900 dark:text-white transition-colors duration-300"
         {!loading && !error && countries.length > 0 && (
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
             {countries.map((country) => (
-              <CountryCard key={country.cca3} country={country} />
+              <CountryCard
+              key={country.cca3}
+              country={country}
+              {...(user && {
+                isFavorited: userFavorites.includes(country.cca3),
+                onFavoriteAdded: () =>
+                  setUserFavorites((prev) => [...prev, country.cca3]),
+                onFavoriteRemoved: () =>
+                  setUserFavorites((prev) =>
+                    prev.filter((code) => code !== country.cca3)
+                  ),
+              })}
+            />
+            
             ))}
           </div>
         )}

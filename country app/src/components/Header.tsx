@@ -1,18 +1,24 @@
 import { useAuth } from "../context/AuthContext";
 import { useState } from "react";
-import { FaUser, FaSignOutAlt, FaSignInAlt, FaUserPlus, FaMoon, FaSun } from "react-icons/fa";
+import {
+  FaUser,
+  FaSignOutAlt,
+  FaSignInAlt,
+  FaUserPlus,
+  FaHeart,
+} from "react-icons/fa";
+import { NavLink } from "react-router-dom";
 
 const Header = () => {
-  const { user, login, logout } = useAuth();
+  const { user, login, logout, favorites } = useAuth();
   const [showModal, setShowModal] = useState<"login" | "register" | null>(null);
   const [form, setForm] = useState({ name: "", email: "", password: "" });
   const [loading, setLoading] = useState(false);
-  const [darkMode, setDarkMode] = useState(document.documentElement.classList.contains("dark"));
-  const [error, setError] = useState<string | null>(null); // Added error state
+  const [error, setError] = useState<string | null>(null);
 
   const handleSubmit = async (type: "login" | "register") => {
     setLoading(true);
-    setError(null); // Reset error before submitting
+    setError(null);
     try {
       const res = await fetch(`https://countrycompass-backend.onrender.com/api/auth/${type}`, {
         method: "POST",
@@ -23,6 +29,7 @@ const Header = () => {
       if (res.ok) {
         login(form.email, data.token);
         setShowModal(null);
+        setForm({ name: "", email: "", password: "" });
       } else {
         setError(data.message || "An error occurred.");
       }
@@ -34,27 +41,14 @@ const Header = () => {
     }
   };
 
-  const toggleDarkMode = () => {
-    document.documentElement.classList.toggle("dark");
-    setDarkMode(!darkMode);
-  };
-
   return (
     <header className="bg-gradient-to-r from-blue-900 to-gray-700 text-white shadow-lg">
       <div className="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center relative">
-        <h1 className="text-2xl font-bold tracking-tight flex items-center gap-2">
-          🌍 <span>NationExplorer</span>
-        </h1>
+        <NavLink to="/" className="text-2xl font-bold tracking-tight flex items-center gap-2">
+          🌍 <span>CountryCompass</span>
+        </NavLink>
 
         <div className="flex items-center gap-4">
-          <button
-            onClick={toggleDarkMode}
-            className="text-xl bg-white/20 p-2 rounded-full hover:bg-white/30 transition"
-            title="Toggle Theme"
-          >
-            {darkMode ? <FaSun /> : <FaMoon />}
-          </button>
-
           {!user ? (
             <>
               <button
@@ -72,6 +66,25 @@ const Header = () => {
             </>
           ) : (
             <>
+              <NavLink
+                to="/favorites"
+                className={({ isActive }) =>
+                  `flex items-center gap-2 px-4 py-1.5 rounded-full font-semibold shadow transition ${
+                    isActive
+                      ? "bg-white text-indigo-600"
+                      : "bg-white/20 text-white hover:bg-white/30"
+                  }`
+                }
+              >
+                <FaHeart />
+                Favorites
+                {favorites.length > 0 && (
+                  <span className="ml-1 bg-red-500 text-white text-xs font-bold px-2 py-0.5 rounded-full">
+                    {favorites.length}
+                  </span>
+                )}
+              </NavLink>
+
               <span className="flex items-center gap-2 text-sm font-medium">
                 <FaUser className="text-white" /> {user}
               </span>
@@ -112,6 +125,7 @@ const Header = () => {
                   onChange={(e) => setForm({ ...form, email: e.target.value })}
                   className="w-full p-2 border border-gray-300 rounded mb-3 focus:outline-none focus:ring-2 focus:ring-indigo-500"
                 />
+
                 <input
                   type="password"
                   placeholder="Password"
@@ -119,8 +133,7 @@ const Header = () => {
                   onChange={(e) => setForm({ ...form, password: e.target.value })}
                   className="w-full p-2 border border-gray-300 rounded mb-4 focus:outline-none focus:ring-2 focus:ring-indigo-500"
                 />
-                
-                {/* Display error message if there's any */}
+
                 {error && <p className="text-red-500 text-center mb-4">{error}</p>}
 
                 <button
