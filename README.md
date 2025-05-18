@@ -1,5 +1,5 @@
 
-### 📖 **README.md – Country Details App**
+### 📖 **README.md – Country Details App-Country Compass**
 ```md
 # 🌍 Country Details App
 
