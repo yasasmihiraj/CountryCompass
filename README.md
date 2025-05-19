@@ -33,6 +33,21 @@ This application is designed for those who want to explore **geographical, polit
 
 ---
 
+## ✨ challanges
+
+🔄 1. Data Formatting Issues
+❌ Problem: Some fields, such as languages, were returned as an object with language codes, requiring additional transformation for proper display. ✅ Solution: We developed helper functions to parse and format API responses dynamically, ensuring users see country details in a readable format.
+
+⏳ 2. API Response Delays
+❌ Problem: Fetching data for all countries at once sometimes caused lag, negatively impacting user experience. ✅ Solution: To tackle this, we:
+
+Implemented a loading spinner to provide visual feedback when fetching data.
+
+Used lazy loading—fetching data only when necessary, such as during searches or region filtering.
+
+🚀 3. Deployment Issues
+❌ Problem: While deploying the application, we encountered compatibility issues with hosting services. The application required proper environment variables, file structuring, and API integration settings to run smoothly in production. ✅ Solution: To address deployment challenges:
+
 ## 📡 API Endpoints
 
 Your backend provides RESTful API endpoints for managing authentication and country details.
