@@ -2,6 +2,9 @@
 import request from "supertest";
 import app from "../src/app";
 
+// Add this line to include Jest's global types
+import "jest";
+
 describe("Auth API Tests", () => {
   it("should register a user successfully", async () => {
     const res = await request(app).post("/api/auth/register").send({

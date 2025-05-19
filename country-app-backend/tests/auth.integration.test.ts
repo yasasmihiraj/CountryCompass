@@ -2,6 +2,8 @@
 import request from "supertest";
 import app from "../src/app";
 
+// Ensure Jest types are available
+
 describe("Auth Integration Tests", () => {
   let token: string;
 
